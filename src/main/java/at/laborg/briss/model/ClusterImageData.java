@@ -12,12 +12,12 @@ public class ClusterImageData {
 	private final static int MAX_PAGE_HEIGHT = 900;
 	private final static int MAX_IMAGE_RENDER_SIZE = 2000 * 2000;
 
-	private boolean renderable;
+	private final boolean renderable;
 	private BufferedImage previewImage;
 	private WritableRaster raster = null;
 	private short[][][] imgdata;
 	private int imageCnt = 0;
-	private int totalImages;
+	private final int totalImages;
 
 	public ClusterImageData(int pageWidth, int pageHeight, int nrOfImages) {
 		this.renderable = pageWidth * pageHeight < MAX_IMAGE_RENDER_SIZE;
@@ -110,17 +110,26 @@ public class ClusterImageData {
 
 		if (!renderable)
 			return getUnrenderableImage();
-		int[][] sdvalue = sd();
-		for (int k = 0; k < previewImage.getHeight(); ++k) {
-			for (int j = 0; j < previewImage.getWidth(); ++j) {
-				raster.setSample(j, k, 0, sdvalue[j][k]);
+		if (totalImages == 1) {
+			for (int i = 0; i < previewImage.getWidth(); ++i) {
+				for (int j = 0; j < previewImage.getHeight(); ++j) {
+					raster.setSample(i, j, 0, imgdata[i][j][0]);
+				}
+			}
+			previewImage.setData(raster);
+			return previewImage;
+		}
+		int[][] sdvalue = calculateSdOfImages();
+		for (int i = 0; i < previewImage.getWidth(); ++i) {
+			for (int j = 0; j < previewImage.getHeight(); ++j) {
+				raster.setSample(i, j, 0, sdvalue[i][j]);
 			}
 		}
 		previewImage.setData(raster);
 		return previewImage;
 	}
 
-	private int[][] sd() {
+	private int[][] calculateSdOfImages() {
 		int width = imgdata.length;
 		int height = imgdata[0].length;
 		int[][] sum = new int[width][height];
