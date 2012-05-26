@@ -25,21 +25,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CropDefinition {
+public final class CropDefinition {
 
 	private final File sourceFile;
 	private final File destinationFile;
 	private final Map<Integer, List<Float[]>> pageToCropRectangles;
 
-	private CropDefinition(File source, File destination,
-			HashMap<Integer, List<Float[]>> pageToCropRectangles) {
+	private CropDefinition(final File source, final File destination,
+			final HashMap<Integer, List<Float[]>> pageToCropRectangles) {
 		this.sourceFile = source;
 		this.destinationFile = destination;
 		this.pageToCropRectangles = pageToCropRectangles;
 	}
 
-	public static CropDefinition createCropDefinition(File source,
-			File destination, ClusterDefinition clusters) throws IOException {
+	public static CropDefinition createCropDefinition(final File source,
+			final File destination, final ClusterDefinition clusters) throws IOException {
 		if (source == null)
 			throw new IllegalArgumentException("Source must be provided");
 		if (!source.exists())
@@ -73,7 +73,7 @@ public class CropDefinition {
 		return destinationFile;
 	}
 
-	public List<Float[]> getRectanglesForPage(Integer page) {
+	public List<Float[]> getRectanglesForPage(final Integer page) {
 		if (pageToCropRectangles.containsKey(page))
 			return pageToCropRectangles.get(page);
 		else

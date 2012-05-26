@@ -28,10 +28,12 @@ import at.laborg.briss.model.PageExcludes;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfReader;
 
-public class ClusterCreator {
+public final class ClusterCreator {
+	private ClusterCreator() {
+	};
 
-	public static ClusterDefinition clusterPages(File source,
-			PageExcludes pageExcludes) throws IOException {
+	public static ClusterDefinition clusterPages(final File source,
+			final PageExcludes pageExcludes) throws IOException {
 		PdfReader reader = new PdfReader(source.getAbsolutePath());
 
 		ClusterDefinition clusters = new ClusterDefinition();
@@ -58,7 +60,7 @@ public class ClusterCreator {
 		return clusters;
 	}
 
-	private static Rectangle getLayoutBox(PdfReader reader, int page) {
+	private static Rectangle getLayoutBox(final PdfReader reader, final int page) {
 		Rectangle layoutBox = reader.getBoxSize(page, "crop");
 
 		if (layoutBox == null) {
@@ -68,7 +70,7 @@ public class ClusterCreator {
 	}
 
 	private static boolean checkExclusionAndGetPageNumber(
-			PageExcludes pageExcludes, int page) {
+			final PageExcludes pageExcludes, final int page) {
 		return (pageExcludes != null && pageExcludes.containsPage(page));
 	}
 }

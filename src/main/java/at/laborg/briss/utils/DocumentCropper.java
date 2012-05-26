@@ -19,12 +19,13 @@
 package at.laborg.briss.utils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 import at.laborg.briss.exception.CropException;
 import at.laborg.briss.model.CropDefinition;
@@ -33,6 +34,7 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfArray;
+import com.itextpdf.text.pdf.PdfDestination;
 import com.itextpdf.text.pdf.PdfDictionary;
 import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfName;
@@ -41,11 +43,15 @@ import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfSmartCopy;
 import com.itextpdf.text.pdf.PdfStamper;
 import com.itextpdf.text.pdf.SimpleBookmark;
+import com.itextpdf.text.pdf.SimpleNamedDestination;
 
-public class DocumentCropper {
+public final class DocumentCropper {
 
-	public static File crop(CropDefinition cropDefinition) throws IOException,
-			DocumentException, CropException {
+	private DocumentCropper() {
+	};
+
+	public static File crop(final CropDefinition cropDefinition)
+			throws IOException, DocumentException, CropException {
 
 		// check if everything is ready
 		if (!BrissFileHandling.checkValidStateAndCreate(cropDefinition
@@ -69,13 +75,15 @@ public class DocumentCropper {
 		return cropDefinition.getDestinationFile();
 	}
 
-	private static File copyToMultiplePages(CropDefinition cropDefinition,
-			PdfMetaInformation pdfMetaInformation) throws IOException,
+	private static File copyToMultiplePages(
+			final CropDefinition cropDefinition,
+			final PdfMetaInformation pdfMetaInformation) throws IOException,
 			DocumentException {
 
 		PdfReader reader = new PdfReader(cropDefinition.getSourceFile()
 				.getAbsolutePath());
-
+		HashMap<String, String> map = SimpleNamedDestination
+				.getNamedDestination(reader, false);
 		Document document = new Document();
 
 		File resultFile = File.createTempFile("cropped", ".pdf");
@@ -83,6 +91,24 @@ public class DocumentCropper {
 				resultFile));
 		document.open();
 
+		Map<Integer, List<String>> pageNrToDestinations = new HashMap<Integer, List<String>>();
+		for (String single : map.keySet()) {
+			StringTokenizer st = new StringTokenizer(map.get(single), " ");
+			if (st.hasMoreElements()) {
+				String pageNrString = (String) st.nextElement();
+				int pageNr = Integer.parseInt(pageNrString);
+				List<String> singleList = (pageNrToDestinations.get(pageNr));
+				if (singleList == null) {
+					singleList = new ArrayList<String>();
+					singleList.add(single);
+					pageNrToDestinations.put(pageNr, singleList);
+				} else {
+					singleList.add(single);
+				}
+			}
+		}
+
+		int outputPageNumber = 0;
 		for (int pageNumber = 1; pageNumber <= pdfMetaInformation
 				.getSourcePageCount(); pageNumber++) {
 
@@ -90,12 +116,18 @@ public class DocumentCropper {
 					pageNumber);
 
 			pdfCopy.addPage(pdfPage);
-
+			outputPageNumber++;
+			List<String> destinations = pageNrToDestinations.get(pageNumber);
+			if (destinations != null) {
+				for (String destination : destinations)
+					pdfCopy.addNamedDestination(destination, outputPageNumber,
+							new PdfDestination(PdfDestination.FIT));
+			}
 			List<Float[]> rectangles = cropDefinition
 					.getRectanglesForPage(pageNumber);
-
 			for (int j = 1; j < rectangles.size(); j++) {
 				pdfCopy.addPage(pdfPage);
+				outputPageNumber++;
 			}
 		}
 		document.close();
@@ -104,9 +136,10 @@ public class DocumentCropper {
 		return resultFile;
 	}
 
-	private static void cropMultipliedFile(CropDefinition cropDefinition,
-			File multipliedDocument, PdfMetaInformation pdfMetaInformation)
-			throws FileNotFoundException, DocumentException, IOException {
+	private static void cropMultipliedFile(final CropDefinition cropDefinition,
+			final File multipliedDocument,
+			final PdfMetaInformation pdfMetaInformation)
+			throws DocumentException, IOException {
 
 		PdfReader reader = new PdfReader(multipliedDocument.getAbsolutePath());
 
@@ -161,7 +194,7 @@ public class DocumentCropper {
 		reader.close();
 	}
 
-	private static PdfArray createScaledBoxArray(Rectangle scaledBox) {
+	private static PdfArray createScaledBoxArray(final Rectangle scaledBox) {
 		PdfArray scaleBoxArray = new PdfArray();
 		scaleBoxArray.add(new PdfNumber(scaledBox.getLeft()));
 		scaleBoxArray.add(new PdfNumber(scaledBox.getBottom()));
@@ -170,7 +203,8 @@ public class DocumentCropper {
 		return scaleBoxArray;
 	}
 
-	private static boolean isPasswordRequired(File file) throws IOException {
+	private static boolean isPasswordRequired(final File file)
+			throws IOException {
 		PdfReader reader = new PdfReader(file.getAbsolutePath());
 		boolean isEncrypted = reader.isEncrypted();
 		reader.close();
@@ -183,7 +217,7 @@ public class DocumentCropper {
 		private final HashMap<String, String> sourceMetaInfo;
 		private final List<HashMap<String, Object>> sourceBookmarks;
 
-		public PdfMetaInformation(File source) throws IOException {
+		public PdfMetaInformation(final File source) throws IOException {
 			PdfReader reader = new PdfReader(source.getAbsolutePath());
 			this.sourcePageCount = reader.getNumberOfPages();
 			this.sourceMetaInfo = reader.getInfo();

@@ -20,7 +20,7 @@ package at.laborg.briss.exception;
 @SuppressWarnings("serial")
 public class CropException extends Exception {
 
-	public CropException(String message) {
+	public CropException(final String message) {
 		super(message);
 	}
 

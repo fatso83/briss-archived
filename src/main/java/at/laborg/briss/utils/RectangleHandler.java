@@ -4,9 +4,14 @@ import java.util.List;
 
 import com.itextpdf.text.Rectangle;
 
-public class RectangleHandler {
-	public static Rectangle calculateScaledRectangle(List<Rectangle> boxes,
-			Float[] ratios, int rotation) {
+public final class RectangleHandler {
+
+	private RectangleHandler() {
+	};
+
+	public static Rectangle calculateScaledRectangle(
+			final List<Rectangle> boxes, final Float[] ratios,
+			final int rotation) {
 		if (ratios == null || boxes.size() == 0)
 			return null;
 		Rectangle smallestBox = null;
@@ -46,18 +51,19 @@ public class RectangleHandler {
 	}
 
 	/**
-	 * Rotates the ratios counter clockwise until its at 0
+	 * Rotates the ratios counter clockwise until its at 0.
 	 * 
 	 * @param ratios
 	 * @param rotation
 	 * @return
 	 */
-	private static float[] rotateRatios(Float[] ratios, int rotation) {
+	private static float[] rotateRatios(final Float[] ratios, final int rotation) {
 		float[] tmpRatios = new float[4];
 		for (int i = 0; i < 4; i++) {
 			tmpRatios[i] = ratios[i];
 		}
-		while (rotation > 0 && rotation < 360) {
+		int tmpRotation = rotation;
+		while (tmpRotation > 0 && tmpRotation < 360) {
 			float tmpValue = tmpRatios[0];
 			// left
 			tmpRatios[0] = tmpRatios[1];
@@ -67,7 +73,7 @@ public class RectangleHandler {
 			tmpRatios[2] = tmpRatios[3];
 			// top
 			tmpRatios[3] = tmpValue;
-			rotation += 90;
+			tmpRotation += 90;
 		}
 		return tmpRatios;
 	}

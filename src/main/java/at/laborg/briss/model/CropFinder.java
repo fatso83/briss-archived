@@ -3,7 +3,10 @@ package at.laborg.briss.model;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 
-public class CropFinder {
+public final class CropFinder {
+
+	private CropFinder() {
+	};
 
 	private static final double RATIO_LOOK_AHEAD_SATISFY = 0.85;
 	private static final int LOOK_AHEAD_PIXEL_NR = 30;
@@ -17,7 +20,7 @@ public class CropFinder {
 	public static final int ORIENTATION_RIGHT = 2;
 	public static final int ORIENTATION_BOTTOM = 3;
 
-	public static Float[] getAutoCropFloats(BufferedImage image) {
+	public static Float[] getAutoCropFloats(final BufferedImage image) {
 
 		WritableRaster raster = image.getRaster();
 
@@ -45,7 +48,8 @@ public class CropFinder {
 		return result;
 	}
 
-	private static double[] sumFrom2dTo1d(WritableRaster raster, int axis) {
+	private static double[] sumFrom2dTo1d(final WritableRaster raster,
+			final int axis) {
 		if (axis == X_AXIS) {
 			double[] values = new double[raster.getWidth()];
 			for (int i = 0; i < raster.getWidth(); i++) {
@@ -72,7 +76,7 @@ public class CropFinder {
 		return null;
 	}
 
-	private static double[] createDerivation(double[] values) {
+	private static double[] createDerivation(final double[] values) {
 		double[] derivedValues = new double[values.length - 1];
 		for (int i = 0; i < derivedValues.length; i++) {
 			derivedValues[i] = values[i + 1] - values[i];
@@ -80,7 +84,8 @@ public class CropFinder {
 		return derivedValues;
 	}
 
-	private static int findPosition(double[] sds, int orientationLeft) {
+	private static int findPosition(final double[] sds,
+			final int orientationLeft) {
 		int position = 0;
 
 		switch (orientationLeft) {
@@ -120,11 +125,13 @@ public class CropFinder {
 				}
 			}
 			break;
+		default:
+			break;
 		}
 		return position;
 	}
 
-	private static double[] createSdOfDerivation(double[] diffOut) {
+	private static double[] createSdOfDerivation(final double[] diffOut) {
 
 		double[] sds = new double[diffOut.length];
 
@@ -143,7 +150,8 @@ public class CropFinder {
 		return sds;
 	}
 
-	private static int diffCounter(double[] values, int start, int end) {
+	private static int diffCounter(final double[] values, final int start,
+			final int end) {
 
 		int cnt = 0;
 		for (int i = start; i < end; i++) {
@@ -154,7 +162,7 @@ public class CropFinder {
 		return cnt;
 	}
 
-	private static double sd(double[] values) {
+	private static double sd(final double[] values) {
 		// get mean
 		double mean = 0;
 		double sum = 0;

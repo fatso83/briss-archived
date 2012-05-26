@@ -21,46 +21,42 @@ package at.laborg.briss.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PageCluster implements Comparable<PageCluster> {
+public class SingleCluster implements Comparable<SingleCluster> {
 
-	private static final int MERGE_VARIABILITY = 20;
-	private static final int MAX_MERGE_PAGES = 15;
+	private final static int MERGE_VARIABILITY = 20;
+	private final static int MAX_MERGE_PAGES = 20;
 
 	private List<Integer> pagesToMerge;
-	private final List<Integer> allPages;
+	private List<Integer> allPages;
 	private final List<Float[]> cropRatiosList = new ArrayList<Float[]>();
 
-	private boolean excluded = false;
-
+	
 	private ClusterImageData imageData;
 
+	private int excludedPageNumber = -1;
 	private final boolean evenPage;
 	private final int pageWidth;
 	private final int pageHeight;
 
-	public PageCluster(final boolean isEvenPage, final int pageWidth, final int pageHeight,
-			final boolean excluded, final int pageNumber) {
+	public SingleCluster(boolean isEvenPage, int pageWidth, int pageHeight,
+			int excludedPageNumber) {
 		super();
 		this.pageWidth = pageWidth;
 		this.pageHeight = pageHeight;
 		this.evenPage = isEvenPage;
-		this.excluded = excluded;
+		this.excludedPageNumber = excludedPageNumber;
 		this.pagesToMerge = new ArrayList<Integer>();
-		this.allPages = new ArrayList<Integer>();
-		this.allPages.add(pageNumber);
 	}
 
-	public final ClusterImageData getImageData() {
-		if (imageData == null) {
-			imageData = new ClusterImageData(pageWidth, pageHeight,
-					pagesToMerge.size());
-		}
+	
+	public ClusterImageData getImageData() {
+		if (imageData==null)
+			imageData = new ClusterImageData(pageWidth, pageHeight,pagesToMerge.size());
 		return imageData;
 	}
 
+
 	/**
-	 * Returns the ratio to crop the page.
-	 * 
 	 * returns the ratio to crop the page x1,y1,x2,y2, origin = bottom left x1:
 	 * from left edge to left edge of crop rectange y1: from lower edge to lower
 	 * edge of crop rectange x2: from right edge to right edge of crop rectange
@@ -68,25 +64,45 @@ public class PageCluster implements Comparable<PageCluster> {
 	 * 
 	 * @return
 	 */
-	public final List<Float[]> getRatiosList() {
+	public List<Float[]> getRatiosList() {
 		return cropRatiosList;
 	}
 
-	public final void clearRatios() {
+	public void clearRatios() {
 		cropRatiosList.clear();
 	}
 
-	public final void addRatios(final Float[] ratios) {
+	public void addRatios(Float[] ratios) {
 		// check if already in
 		if (!cropRatiosList.contains(ratios)) {
 			cropRatiosList.add(ratios);
 		}
+
 	}
 
-	public final boolean isClusterNearlyEqual(final PageCluster other) {
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (evenPage ? 1231 : 1237);
+		result = prime * result + excludedPageNumber;
+		result = prime * result + getRoundedPageHeight();
+		result = prime * result + getRoundedPageWidth();
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SingleCluster other = (SingleCluster) obj;
 		if (evenPage != other.evenPage)
 			return false;
-		if (excluded || other.excluded)
+		if (excludedPageNumber != other.excludedPageNumber)
 			return false;
 		if (getRoundedPageHeight() != other.getRoundedPageHeight())
 			return false;
@@ -95,49 +111,46 @@ public class PageCluster implements Comparable<PageCluster> {
 		return true;
 	}
 
-	public final void mergeClusters(final PageCluster other) {
-		allPages.addAll(other.getAllPages());
-	}
-
-	public final boolean isEvenPage() {
+	public boolean isEvenPage() {
 		return evenPage;
 	}
 
-	public final int getRoundedPageHeight() {
+	public int getRoundedPageHeight() {
 		int tmp = pageHeight / MERGE_VARIABILITY;
 		return tmp * MERGE_VARIABILITY;
 	}
 
-	public final int getRoundedPageWidth() {
+	public int getRoundedPageWidth() {
 		int tmp = pageWidth / MERGE_VARIABILITY;
 		return tmp * MERGE_VARIABILITY;
 	}
 
-	public final void choosePagesToMerge() {
-		if (allPages.size() < MAX_MERGE_PAGES) {
+	public void choosePagesToMerge(List<Integer> pages) {
+		allPages = pages;
+		if (pages.size() < MAX_MERGE_PAGES) {
 			// use all pages
-			pagesToMerge = allPages;
+			pagesToMerge = pages;
 		} else {
 			// use an equal distribution
-			float stepWidth = (float) allPages.size() / MAX_MERGE_PAGES;
+			float stepWidth = (float) pages.size() / MAX_MERGE_PAGES;
 			float totalStepped = 0;
 			for (int i = 0; i < MAX_MERGE_PAGES; i++) {
-				pagesToMerge.add(allPages.get(new Double(Math
-						.floor(totalStepped)).intValue()));
+				pagesToMerge.add(pages.get(new Double(Math.floor(totalStepped))
+						.intValue()));
 				totalStepped += stepWidth;
 			}
 		}
 	}
 
-	public final List<Integer> getAllPages() {
+	public List<Integer> getAllPages() {
 		return allPages;
 	}
 
-	public final List<Integer> getPagesToMerge() {
+	public List<Integer> getPagesToMerge() {
 		return pagesToMerge;
 	}
 
-	public final int compareTo(final PageCluster that) {
+	public int compareTo(SingleCluster that) {
 		return this.getFirstPage() - that.getFirstPage();
 	}
 

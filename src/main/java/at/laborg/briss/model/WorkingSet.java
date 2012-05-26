@@ -28,32 +28,32 @@ public class WorkingSet {
 	private WorkingSet() {
 	}
 
-	public WorkingSet(File sourceFile) {
+	public WorkingSet(final File sourceFile) {
 		this.sourceFile = sourceFile;
 		clusters = new ClusterDefinition();
 	}
 
-	public File getSourceFile() {
+	public final File getSourceFile() {
 		return sourceFile;
 	}
 
-	public void setSourceFile(File sourceFile) {
+	public final void setSourceFile(final File sourceFile) {
 		this.sourceFile = sourceFile;
 	}
 
-	public ClusterDefinition getClusterDefinition() {
+	public final ClusterDefinition getClusterDefinition() {
 		return clusters;
 	}
 
-	public void setClusters(ClusterDefinition clusters) {
+	public final void setClusters(final ClusterDefinition clusters) {
 		this.clusters = clusters;
 	}
 
-	public PageExcludes getPageExcludes() {
+	public final PageExcludes getPageExcludes() {
 		return pageExcludes;
 	}
 
-	public void setPageExcludes(PageExcludes pageExcludes) {
+	public final void setPageExcludes(final PageExcludes pageExcludes) {
 		this.pageExcludes = pageExcludes;
 	}
 

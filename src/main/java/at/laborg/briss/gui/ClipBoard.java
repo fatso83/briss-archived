@@ -22,7 +22,7 @@ public final class ClipBoard {
 		cropRectsClipBoard.clear();
 	}
 
-	public void addCrops(List<DrawableCropRect> listToAdd) {
+	public void addCrops(final List<DrawableCropRect> listToAdd) {
 		cropRectsClipBoard.addAll(listToAdd);
 	}
 
@@ -30,7 +30,7 @@ public final class ClipBoard {
 		return cropRectsClipBoard;
 	}
 
-	public void addCrop(DrawableCropRect crop) {
+	public void addCrop(final DrawableCropRect crop) {
 		if (!cropRectsClipBoard.contains(crop)) {
 			cropRectsClipBoard.add(crop);
 		}

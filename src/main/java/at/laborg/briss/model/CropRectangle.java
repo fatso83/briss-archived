@@ -11,8 +11,8 @@ public class CropRectangle {
 	 */
 	private float xToLeft, yToBottom, xToRight, yToTop;
 
-	public CropRectangle(float xToLeft, float yToBottom, float xToRight,
-			float yToTop) {
+	public CropRectangle(final float xToLeft, final float yToBottom, final float xToRight,
+			final float yToTop) {
 		super();
 		this.xToLeft = xToLeft;
 		this.yToBottom = yToBottom;
@@ -20,35 +20,35 @@ public class CropRectangle {
 		this.yToTop = yToTop;
 	}
 
-	public float getxToLeft() {
+	public final float getxToLeft() {
 		return xToLeft;
 	}
 
-	public void setxToLeft(float xToLeft) {
+	public final void setxToLeft(final float xToLeft) {
 		this.xToLeft = xToLeft;
 	}
 
-	public float getyToBottom() {
+	public final float getyToBottom() {
 		return yToBottom;
 	}
 
-	public void setyToBottom(float yToBottom) {
+	public final void setyToBottom(final float yToBottom) {
 		this.yToBottom = yToBottom;
 	}
 
-	public float getxToRight() {
+	public final float getxToRight() {
 		return xToRight;
 	}
 
-	public void setxToRight(float xToRight) {
+	public final void setxToRight(final float xToRight) {
 		this.xToRight = xToRight;
 	}
 
-	public float getyToTop() {
+	public final float getyToTop() {
 		return yToTop;
 	}
 
-	public void setyToTop(float yToTop) {
+	public final void setyToTop(final float yToTop) {
 		this.yToTop = yToTop;
 	}
 

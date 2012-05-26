@@ -18,15 +18,16 @@ public class ClusterRenderWorker extends Thread {
 	private final File source;
 	private final ClusterDefinition clusters;
 
-	public ClusterRenderWorker(File source, ClusterDefinition clusters) {
+	public ClusterRenderWorker(final File source,
+			final ClusterDefinition clusters) {
 		super();
 		this.source = source;
 		this.clusters = clusters;
 	}
 
 	@Override
-	public void run() {
-		PdfDecoder pdfDecoder = new PdfDecoder(true);
+	public final void run() {
+		PdfDecoder pdfDecoder = new PdfDecoder();
 		try {
 			pdfDecoder.openPdfFile(source.getAbsolutePath());
 		} catch (PdfException e1) {
