@@ -8,7 +8,7 @@ some effort into preserving the original commits.
 ## Why?
 There are multiple forks of this old project, but few have taken the time
 to preserve the original commits and work of the original 
-authors, Gerhard Aigner and Rastislav Wartiak, which
+authors, [Gerhard Aigner (laborg)](https://github.com/laborg) and Rastislav Wartiak, which
 I think they deserve.
 
 This should serve as a basis for new forks. Or existing
